@@ -1,0 +1,183 @@
+-- ============================================================
+-- GLOW BY CHLO — Supabase schema
+-- Run this ONCE in: Supabase Dashboard → SQL Editor → New query
+--
+-- Security model (RLS is ON for every table from day one):
+--   • anon (public site visitors)  → read-only, and only
+--     published/active rows
+--   • authenticated (the console)  → full read/write
+-- The anon key in js/config.js is safe to ship in the browser
+-- because these policies are what actually gate access.
+-- ============================================================
+
+-- ---------- tables ----------
+
+create table if not exists public.site_content (
+  key        text primary key,
+  value      text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.events (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null,
+  date_label  text not null default '',
+  location    text not null default '',
+  description text not null default '',
+  published   boolean not null default true,
+  sort        integer not null default 0,
+  created_at  timestamptz not null default now()
+);
+
+create table if not exists public.announcements (
+  id         uuid primary key default gen_random_uuid(),
+  message    text not null default '',
+  link_url   text not null default '',
+  link_label text not null default '',
+  active     boolean not null default false,
+  updated_at timestamptz not null default now()
+);
+
+-- ---------- keep updated_at fresh ----------
+
+create or replace function public.touch_updated_at()
+returns trigger language plpgsql as $$
+begin
+  new.updated_at = now();
+  return new;
+end $$;
+
+drop trigger if exists trg_site_content_touch on public.site_content;
+create trigger trg_site_content_touch
+  before update on public.site_content
+  for each row execute function public.touch_updated_at();
+
+drop trigger if exists trg_announcements_touch on public.announcements;
+create trigger trg_announcements_touch
+  before update on public.announcements
+  for each row execute function public.touch_updated_at();
+
+-- ---------- row level security: LOCKED DOWN ----------
+
+alter table public.site_content  enable row level security;
+alter table public.events        enable row level security;
+alter table public.announcements enable row level security;
+
+-- site_content: everyone can read, only the console can write
+drop policy if exists "anon read site_content" on public.site_content;
+create policy "anon read site_content"
+  on public.site_content for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "admin insert site_content" on public.site_content;
+create policy "admin insert site_content"
+  on public.site_content for insert
+  to authenticated
+  with check (true);
+
+drop policy if exists "admin update site_content" on public.site_content;
+create policy "admin update site_content"
+  on public.site_content for update
+  to authenticated
+  using (true) with check (true);
+
+drop policy if exists "admin delete site_content" on public.site_content;
+create policy "admin delete site_content"
+  on public.site_content for delete
+  to authenticated
+  using (true);
+
+-- events: public sees published only, console sees + edits everything
+drop policy if exists "anon read published events" on public.events;
+create policy "anon read published events"
+  on public.events for select
+  to anon
+  using (published = true);
+
+drop policy if exists "admin read events" on public.events;
+create policy "admin read events"
+  on public.events for select
+  to authenticated
+  using (true);
+
+drop policy if exists "admin insert events" on public.events;
+create policy "admin insert events"
+  on public.events for insert
+  to authenticated
+  with check (true);
+
+drop policy if exists "admin update events" on public.events;
+create policy "admin update events"
+  on public.events for update
+  to authenticated
+  using (true) with check (true);
+
+drop policy if exists "admin delete events" on public.events;
+create policy "admin delete events"
+  on public.events for delete
+  to authenticated
+  using (true);
+
+-- announcements: public sees active only, console sees + edits everything
+drop policy if exists "anon read active announcements" on public.announcements;
+create policy "anon read active announcements"
+  on public.announcements for select
+  to anon
+  using (active = true);
+
+drop policy if exists "admin read announcements" on public.announcements;
+create policy "admin read announcements"
+  on public.announcements for select
+  to authenticated
+  using (true);
+
+drop policy if exists "admin insert announcements" on public.announcements;
+create policy "admin insert announcements"
+  on public.announcements for insert
+  to authenticated
+  with check (true);
+
+drop policy if exists "admin update announcements" on public.announcements;
+create policy "admin update announcements"
+  on public.announcements for update
+  to authenticated
+  using (true) with check (true);
+
+drop policy if exists "admin delete announcements" on public.announcements;
+create policy "admin delete announcements"
+  on public.announcements for delete
+  to authenticated
+  using (true);
+
+-- ---------- seed data (matches the static site defaults) ----------
+
+insert into public.site_content (key, value) values
+  ('price-single',     '$55'),
+  ('price-additional', '+$20 ea'),
+  ('price-shaped',     'from $70'),
+  ('price-custom',     'from $150'),
+  ('price-removal',    '$20'),
+  ('price-travel',     '+$25'),
+  ('price-lagoon',     '$185'),
+  ('price-candy',      '$225'),
+  ('price-bikini',     '$265'),
+  ('price-party',      '$45')
+on conflict (key) do nothing;
+
+insert into public.events (title, date_label, location, description, published, sort) values
+  ('Pop-Up: Midtown Sacramento', 'AUG 2',  'Midtown Farmers Market', 'Walk-ups welcome, singles + minis only. First come, first sparkled.', true, 1),
+  ('Pop-Up: Downtown Roseville', 'AUG 16', 'Vernon Street', 'Full collections available — book a slot to skip the line.', true, 2);
+
+insert into public.announcements (message, link_url, link_label, active) values
+  ('✦ Summer pop-up season is live — mobile appointments now booking across Sacramento', 'book.html', 'Book now →', true);
+
+-- ============================================================
+-- AFTER RUNNING THIS FILE:
+-- 1. Dashboard → Authentication → Users → Add user
+--    (Chloe's email + a strong password — this is her console login)
+-- 2. Dashboard → Project Settings → API → copy:
+--      Project URL  → SUPABASE_URL in js/config.js
+--      anon public  → SUPABASE_ANON_KEY in js/config.js
+-- 3. Redeploy the site. Console: https://glowbychlo.co/admin/
+-- ============================================================
