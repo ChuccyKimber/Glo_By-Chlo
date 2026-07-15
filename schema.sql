@@ -1,0 +1,204 @@
+/* ============================================================
+   GLOW BY CHLO — main.js
+   Static-first: every page works with zero backend.
+   If Supabase is configured, live content overlays the HTML.
+   ============================================================ */
+(function () {
+  "use strict";
+  var CFG = window.GBC_CONFIG || {};
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- mobile nav ---------- */
+  var toggle = document.querySelector(".nav-toggle");
+  var nav = document.querySelector(".nav");
+  if (toggle && nav) {
+    toggle.addEventListener("click", function () {
+      var open = nav.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.textContent = open ? "CLOSE" : "MENU";
+    });
+  }
+
+  /* ---------- helpers ---------- */
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function fetchJSON(url) {
+    return fetch(url, { cache: "no-store" }).then(function (r) {
+      if (!r.ok) throw new Error(url + " " + r.status);
+      return r.json();
+    });
+  }
+  function sbConfigured() {
+    return CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY;
+  }
+  function sbGet(path) {
+    return fetch(CFG.SUPABASE_URL + "/rest/v1/" + path, {
+      headers: {
+        apikey: CFG.SUPABASE_ANON_KEY,
+        Authorization: "Bearer " + CFG.SUPABASE_ANON_KEY
+      }
+    }).then(function (r) {
+      if (!r.ok) throw new Error("supabase " + r.status);
+      return r.json();
+    });
+  }
+
+  /* ---------- announcement bar ---------- */
+  function renderAnnouncement(a) {
+    var bar = document.getElementById("announce");
+    if (!bar || !a || !a.active || !a.message) return;
+    var html = esc(a.message);
+    if (a.link_url && a.link_label) {
+      html += ' &nbsp;<a href="' + esc(a.link_url) + '">' + esc(a.link_label) + "</a>";
+    }
+    bar.innerHTML = html;
+    bar.classList.add("is-on");
+  }
+  function loadAnnouncement() {
+    if (sbConfigured()) {
+      sbGet("announcements?active=eq.true&select=*&limit=1")
+        .then(function (rows) { renderAnnouncement(rows[0]); })
+        .catch(function () { loadAnnouncementLocal(); });
+    } else {
+      loadAnnouncementLocal();
+    }
+  }
+  function loadAnnouncementLocal() {
+    fetchJSON(rootPath() + "data/announcement.json")
+      .then(renderAnnouncement)
+      .catch(function () {});
+  }
+
+  /* ---------- pop-up events ---------- */
+  function renderEvents(list) {
+    var mount = document.getElementById("events");
+    if (!mount) return;
+    var upcoming = (list || []).filter(function (e) {
+      return e.published !== false;
+    });
+    if (!upcoming.length) {
+      mount.innerHTML =
+        '<p class="events-empty">No pop-ups on the calendar right now — follow ' +
+        '<a href="' + esc(CFG.INSTAGRAM_URL || "#") + '" target="_blank" rel="noopener">' +
+        esc(CFG.INSTAGRAM_HANDLE || "Instagram") + "</a> for the next drop.</p>";
+      return;
+    }
+    mount.innerHTML = upcoming
+      .map(function (e) {
+        return (
+          '<div class="event">' +
+          '<span class="event-date">' + esc(e.date_label || e.date || "") + "</span>" +
+          "<div><h3>" + esc(e.title) + "</h3>" +
+          "<p>" + esc([e.location, e.description].filter(Boolean).join(" — ")) + "</p></div>" +
+          "</div>"
+        );
+      })
+      .join("");
+  }
+  function loadEvents() {
+    if (!document.getElementById("events")) return;
+    if (sbConfigured()) {
+      sbGet("events?published=eq.true&select=*&order=sort.asc")
+        .then(renderEvents)
+        .catch(function () { loadEventsLocal(); });
+    } else {
+      loadEventsLocal();
+    }
+  }
+  function loadEventsLocal() {
+    fetchJSON(rootPath() + "data/events.json")
+      .then(renderEvents)
+      .catch(function () { renderEvents([]); });
+  }
+
+  /* ---------- live content overrides (prices, copy) ---------- */
+  function applyOverrides(rows) {
+    var map = {};
+    (rows || []).forEach(function (r) { map[r.key] = r.value; });
+    document.querySelectorAll("[data-cms]").forEach(function (el) {
+      var key = el.getAttribute("data-cms");
+      if (map[key] != null && map[key] !== "") el.textContent = map[key];
+    });
+  }
+  function loadOverrides() {
+    if (!sbConfigured()) return;
+    sbGet("site_content?select=key,value")
+      .then(applyOverrides)
+      .catch(function () {});
+  }
+
+  /* ---------- Square Appointments mount ---------- */
+  function mountBooking() {
+    var shell = document.getElementById("booking-embed");
+    if (!shell) return;
+    if (CFG.SQUARE_BOOKING_URL) {
+      var frame = document.createElement("iframe");
+      frame.src = CFG.SQUARE_BOOKING_URL;
+      frame.title = "Book an appointment with Glow by Chlo";
+      frame.loading = "lazy";
+      shell.innerHTML = "";
+      shell.appendChild(frame);
+      var openLink = document.getElementById("booking-open-new");
+      if (openLink) {
+        openLink.href = CFG.SQUARE_BOOKING_URL;
+        openLink.hidden = false;
+      }
+    } else {
+      shell.innerHTML =
+        '<div><span class="sticker pink">ONLINE BOOKING LAUNCHING SOON</span>' +
+        '<p class="mt-2" style="max-width:42ch;margin-inline:auto">Until then, appointments are booked through Instagram DMs — tap below and tell us what you\u2019re dreaming up.</p>' +
+        '<a class="btn btn-primary mt-1" target="_blank" rel="noopener" href="' +
+        esc(CFG.INSTAGRAM_URL || "#") + '">DM ' + esc(CFG.INSTAGRAM_HANDLE || "us") + " to book</a></div>";
+    }
+  }
+
+  /* ---------- sparkle system (signature) ---------- */
+  var SPARK_COLORS = ["#c9b8ff", "#ff9dd6", "#7fe7dc", "#ffe9a8"];
+  var lastSpark = 0;
+  function spawnSpark(x, y) {
+    var s = document.createElement("span");
+    s.className = "spark";
+    s.style.left = x - 7 + "px";
+    s.style.top = y - 7 + "px";
+    s.style.color = SPARK_COLORS[Math.floor(Math.random() * SPARK_COLORS.length)];
+    document.body.appendChild(s);
+    setTimeout(function () { s.remove(); }, 750);
+  }
+  if (!reducedMotion) {
+    document.addEventListener("pointerdown", function (e) {
+      var now = Date.now();
+      if (now - lastSpark < 90) return;
+      lastSpark = now;
+      for (var i = 0; i < 3; i++) {
+        spawnSpark(e.clientX + (Math.random() * 26 - 13), e.clientY + (Math.random() * 26 - 13));
+      }
+    });
+    /* ambient twinkles on elements marked .twinkle */
+    var twinkles = document.querySelectorAll(".twinkle");
+    if (twinkles.length) {
+      setInterval(function () {
+        var el = twinkles[Math.floor(Math.random() * twinkles.length)];
+        var r = el.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) return;
+        spawnSpark(r.left + Math.random() * r.width, r.top + Math.random() * r.height);
+      }, 1400);
+    }
+  }
+
+  /* ---------- footer year ---------- */
+  var yr = document.getElementById("year");
+  if (yr) yr.textContent = new Date().getFullYear();
+
+  /* ---------- root path (pages live at / and /admin/) ---------- */
+  function rootPath() {
+    return document.body.getAttribute("data-root") || "";
+  }
+
+  loadAnnouncement();
+  loadEvents();
+  loadOverrides();
+  mountBooking();
+})();

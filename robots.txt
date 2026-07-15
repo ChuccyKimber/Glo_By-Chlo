@@ -1,174 +1,175 @@
-# Glow by Chlo — Deployment Guide (A to Z)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tooth Gem Parties & Pop-Ups — Glow by Chlo · Sacramento Events</title>
+<meta name="description" content="Book a tooth gem party in Sacramento — birthdays, bachelorettes, salon takeovers, and festival pop-ups. Group rates from $45 per guest, host perks, mobile setup included.">
+<link rel="canonical" href="https://glowbychlo.co/parties.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Parties & Pop-Ups — Glow by Chlo">
+<meta property="og:description" content="Tooth gem parties for birthdays, bachelorettes, and events across Sacramento. Group rates + host perks.">
+<meta property="og:url" content="https://glowbychlo.co/parties.html">
+<meta name="theme-color" content="#0b0a12">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Sora:wght@400;600&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body data-root="">
+<a class="skip" href="#main">Skip to content</a>
+<div class="announce" id="announce" role="status"></div>
 
-Full production build: static site + Square Appointments booking + custom Supabase-backed Studio Console.
-Built by No. XIII Agency.
+<header class="site-head">
+  <div class="wrap">
+    <a class="logo" href="index.html">GLOW BY CHLO<span class="dot">.</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">MENU</button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="collections.html">Collections</a>
+      <a href="parties.html" aria-current="page">Parties</a>
+      <a href="aftercare.html">Aftercare</a>
+      <a href="faq.html">FAQ</a>
+      <a href="about.html">About</a>
+      <a class="btn btn-primary" href="book.html">Book now</a>
+    </nav>
+  </div>
+</header>
 
-**Pitch-build status:** the site is fully functional right now with zero backend. The console runs in
-**Demo Mode** (localStorage) until Supabase is connected — so you can demo the entire admin experience
-to Chloe live, on your phone, before she's signed.
+<main id="main">
 
----
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">Bring the sparkle to you</span>
+      <h1>Parties &amp; <span class="chrome twinkle">pop-ups</span></h1>
+      <p class="lead">Birthdays, bachelorettes, salon takeovers, festival booths — we roll up with the full kit and turn your event into a gem bar.</p>
+    </div>
+  </section>
 
-## 0. What's in the box
+  <section style="padding-top:1rem">
+    <div class="wrap">
+      <div class="grid grid-3">
+        <div class="card step card-holo">
+          <span class="step-num">GROUP RATE</span>
+          <h3><span data-cms="price-party">$45</span> per guest</h3>
+          <p>One Swarovski crystal each, with upgrade options on site. Four-guest minimum.</p>
+        </div>
+        <div class="card step card-holo">
+          <span class="step-num">HOST PERK</span>
+          <h3>Host glows free</h3>
+          <p>Book six or more guests and the host's single gem is on us. You planned it — you deserve it.</p>
+        </div>
+        <div class="card step card-holo">
+          <span class="step-num">TRAVEL</span>
+          <h3>Setup included</h3>
+          <p>Travel within 20 miles of Roseville is included for parties. Beyond that, we'll quote it in your confirmation.</p>
+        </div>
+      </div>
 
-```
-glowbychlo/
-├── index.html            Home (hero, collections, pricing, pop-ups, proof, FAQ teaser)
-├── collections.html      Signature collections + full à la carte menu
-├── book.html             Square Appointments embed (auto-fallback until connected)
-├── parties.html          Group rates + Netlify inquiry form + pop-up list
-├── aftercare.html        Full aftercare protocol (SEO content page)
-├── faq.html              10 FAQs + FAQPage schema for rich results
-├── about.html            About Chlo + safety standards
-├── policies.html         Deposits, cancellation, ages, guarantee
-├── thanks.html           Form success page (noindex)
-├── 404.html              Custom 404 (noindex)
-├── admin/index.html      Studio Console (noindex, blocked in robots.txt)
-├── css/site.css          Design system  ·  css/admin.css  Console styles
-├── js/config.js          ★ THE ONLY FILE YOU EDIT TO GO LIVE ★
-├── js/main.js            Site logic  ·  js/admin.js  Console logic
-├── data/*.json           Static fallbacks (used until Supabase is live)
-├── supabase/schema.sql   Tables + locked-down RLS + seed data
-├── netlify.toml          Headers, caching, redirects
-├── robots.txt · sitemap.xml · favicon.svg
-```
+      <div class="grid grid-2 mt-3" style="align-items:start;gap:2.5rem">
+        <div>
+          <h2>How a party <span class="chrome">runs</span></h2>
+          <p class="lead">We arrive 20 minutes early with a full sanitary station, curated gem trays, and the aftercare cards. Each guest picks their crystal, gets prepped, placed, and cured — about 15 minutes per person. You keep the playlist going; we keep the line moving.</p>
+          <p class="lead">Hosting a public event instead? Festivals, markets, and salon collabs run as pop-up booths with walk-up pricing. Tell us about it below.</p>
+          <div class="ph ph-169 mt-2" data-label="Drop party photo · 16:9" role="img" aria-label="Placeholder for a tooth gem party photo"></div>
+        </div>
 
-**Architecture:** every page is static-first (full SEO, works with no backend). When Supabase is
-configured, `main.js` overlays live values onto elements tagged `data-cms` and pulls events +
-announcement from the database. Console edits are live on the site instantly — no redeploy.
+        <div class="card card-holo">
+          <h3 style="margin-bottom:1rem">Request a date</h3>
+          <form name="party-inquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html">
+            <input type="hidden" name="form-name" value="party-inquiry">
+            <p class="hp-field"><label>Don't fill this out: <input name="bot-field"></label></p>
+            <div class="form-grid">
+              <div>
+                <label for="p-name">Your name</label>
+                <input id="p-name" name="name" type="text" required autocomplete="name">
+              </div>
+              <div>
+                <label for="p-email">Email</label>
+                <input id="p-email" name="email" type="email" required autocomplete="email">
+              </div>
+            </div>
+            <div class="form-grid">
+              <div>
+                <label for="p-type">Event type</label>
+                <select id="p-type" name="event_type" required>
+                  <option value="">Choose one…</option>
+                  <option>Birthday</option>
+                  <option>Bachelorette</option>
+                  <option>Salon / studio collab</option>
+                  <option>Festival / market pop-up</option>
+                  <option>Something else</option>
+                </select>
+              </div>
+              <div>
+                <label for="p-guests">Guest count</label>
+                <input id="p-guests" name="guests" type="number" min="4" placeholder="4+" required>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div>
+                <label for="p-date">Preferred date</label>
+                <input id="p-date" name="date" type="date" required>
+              </div>
+              <div>
+                <label for="p-city">City / venue</label>
+                <input id="p-city" name="city" type="text" placeholder="e.g. Rocklin" required>
+              </div>
+            </div>
+            <div>
+              <label for="p-notes">Tell us the vibe</label>
+              <textarea id="p-notes" name="notes" placeholder="Theme, colors, any collections you're eyeing…"></textarea>
+            </div>
+            <button class="btn btn-primary btn-lg" type="submit">Send inquiry ✦</button>
+            <p class="form-note">We reply within 24 hours with availability and a confirmed quote. No payment until the date is locked.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
 
----
+  <section style="background:var(--ink-2);border-top:1px solid var(--line)">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Catch us outside</span>
+        <h2>Upcoming <span class="chrome">pop-ups</span></h2>
+      </div>
+      <div class="grid" id="events" aria-live="polite"></div>
+    </div>
+  </section>
 
-## 1. Local preview
+</main>
 
-The site fetches JSON, so open it through a server, not by double-clicking the file:
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="logo" href="index.html">GLOW BY CHLO<span class="dot">.</span></a>
+        <p class="mt-1" style="color:var(--muted);font-size:.92rem;max-width:34ch">Certified Swarovski tooth gems. Studio appointments in Roseville, mobile across the Sacramento area.</p>
+      </div>
+      <div>
+        <h4>Sparkle</h4>
+        <a href="collections.html">Collections</a>
+        <a href="book.html">Book an appointment</a>
+        <a href="parties.html">Parties &amp; pop-ups</a>
+        <a href="aftercare.html">Aftercare</a>
+      </div>
+      <div>
+        <h4>Studio</h4>
+        <a href="about.html">About Chlo</a>
+        <a href="faq.html">FAQ</a>
+        <a href="policies.html">Policies</a>
+        <a href="https://instagram.com/glowbychlo.co" target="_blank" rel="noopener">Instagram ↗</a>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <span>© <span id="year"></span> Glow by Chlo · Roseville, CA</span>
+      <span>Site by No. XIII Agency</span>
+    </div>
+  </div>
+</footer>
 
-```
-cd glowbychlo
-python3 -m http.server 8000
-```
-
-Visit `http://localhost:8000` — console at `http://localhost:8000/admin/` (Demo Mode banner will show).
-
----
-
-## 2. GitHub + Netlify deploy
-
-1. **GitHub Desktop** → File → New Repository → name `glowbychlo_site` → create.
-2. Drag the entire contents of the `glowbychlo` folder into the repo folder → commit → **Publish repository** (private is fine).
-3. **Netlify** → Add new site → Import from GitHub → pick `glowbychlo_site`.
-4. Build settings: no build command, **publish directory: `.`** → Deploy.
-5. After the first deploy: Site configuration → **Forms** → confirm `party-inquiry` was detected →
-   Form notifications → add Chloe's email. (Netlify Forms only registers after a deploy — a local
-   test submit won't work.)
-
-Future updates: drag-replace files in the repo folder → commit → push. Netlify auto-deploys.
-
----
-
-## 3. Domain
-
-1. Buy `glowbychlo.co` (Netlify → Domains, or Namecheap/Porkbun and point DNS at Netlify).
-2. Netlify → Domain management → add domain → follow the DNS prompt → HTTPS auto-provisions.
-
-All canonical tags, the sitemap, and schema already reference `https://glowbychlo.co/`.
-If a different domain is used, find-and-replace `glowbychlo.co` across the HTML + `sitemap.xml` + `robots.txt`.
-
----
-
-## 4. Supabase (turns Demo Mode into Live Mode)
-
-1. [supabase.com](https://supabase.com) → New project (free tier) → name `glowbychlo`, region US West.
-2. **SQL Editor** → New query → paste the entire contents of `supabase/schema.sql` → Run.
-   This creates the tables, seeds the default prices/events/announcement, and applies
-   **locked-down RLS** (public = read-only published content; writes require login).
-3. **Authentication → Users → Add user** → Chloe's email + strong password. That's her console login.
-4. **Project Settings → API** → copy **Project URL** and **anon public key** into `js/config.js`:
-   ```js
-   SUPABASE_URL: "https://xxxx.supabase.co",
-   SUPABASE_ANON_KEY: "eyJhbGciOi...",
-   ```
-5. Commit + push. Console now shows a login screen at `/admin/` and edits go live instantly.
-
-The anon key is safe in the browser — RLS is what gates access. Never paste the `service_role` key anywhere in this project.
-
----
-
-## 5. Square Appointments
-
-1. Create a free Square account → enable **Appointments** (Free plan works for one artist).
-2. Build the service menu (Items → Services). Suggested structure matching the site:
-   - **Studio — Single Crystal** ($55 · 30 min)
-   - **Studio — Additional Crystal** (add-on, $20)
-   - **Studio — Signature Collection** ($185–$265 · 60–90 min, one service per collection)
-   - **Mobile — Single Crystal** ($80 · includes $25 travel) — repeat for collections
-   - **Gem Removal** ($20 · 15 min)
-3. **Appointments → Settings → Payments & cancellations** → require **$20 no-show protection / deposit**,
-   48-hour cancellation window (matches the policies page).
-4. **Online Booking → Share** → copy the booking page URL → paste into `js/config.js`:
-   ```js
-   SQUARE_BOOKING_URL: "https://square.site/book/XXXX/glow-by-chlo",
-   ```
-5. Push. The book page swaps its fallback card for the live embedded scheduler automatically
-   (plus an "open in new tab" escape hatch for iframe-blocking browsers).
-
-Until this is set, `book.html` shows a branded "booking launching soon — DM to book" card, so the page is never broken.
-
----
-
-## 6. Swapping in real photos
-
-Image slots are holographic placeholder divs (they look intentional in the pitch). Each is marked:
-
-```html
-<div class="ph ph-45" data-label="Drop client photo · 4:5" ...></div>
-```
-
-Replace with:
-
-```html
-<img src="images/electric-lagoon.jpg" alt="Electric Lagoon tooth gem design — teal butterflies" style="border-radius:20px;aspect-ratio:4/5;object-fit:cover;width:100%">
-```
-
-(Create an `images/` folder; export from IG at 1080px+; keep the alt text descriptive for SEO.)
-
-Slots: 3 collection cards on Home, 3 on Collections, artist portrait on About (4:5), party shot on Parties (16:9).
-
----
-
-## 7. What Chloe edits vs. what you edit
-
-| Content | Where |
-|---|---|
-| All 10 prices (menu, collections, travel, party rate) | Console → Pricing |
-| Pop-up events (Home + Parties) | Console → Pop-ups |
-| Sitewide announcement bar | Console → Announcement |
-| Booking services, deposits, calendar | Square Dashboard |
-| Party form submissions | Netlify → Forms |
-| Copy, photos, pages, design | You (HTML) |
-
----
-
-## 8. Pre-pitch checklist
-
-- [ ] Swap placeholder photos for her real IG shots (Section 6)
-- [ ] Replace the 3 sample testimonials on `index.html` (marked as real-sounding sample copy)
-- [ ] Update the 2 sample pop-up events (via console Demo Mode or `data/events.json`)
-- [ ] Confirm pricing with Chloe — defaults are market-researched but hers to set
-- [ ] Confirm her cert/training claims on `about.html` match reality before it ships
-- [ ] Demo flow: Home → Collections → Book (fallback card) → `/admin/` Demo Mode edit → refresh site
-
----
-
-## 9. Troubleshooting
-
-- **Console says Demo Mode after connecting Supabase** → hard-refresh; `js/config.js` is served
-  no-cache but the browser may have the old app shell.
-- **Login fails** → user must exist in Supabase Authentication (Section 4.3); email confirm can be
-  toggled off under Auth settings for instant access.
-- **Booking iframe blank** → some browsers block third-party iframes; the "Open booking in a new tab"
-  button always works. Confirm the URL loads on its own first.
-- **Form submissions missing** → Netlify Forms need the deployed site (not localhost) and the
-  notification email set in Netlify.
-
-— Built by No. XIII Agency · bricknbarrel-grade stack, sparklier client.
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

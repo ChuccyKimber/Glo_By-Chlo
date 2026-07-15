@@ -1,11 +1,174 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://glowbychlo.co/</loc><priority>1.0</priority></url>
-  <url><loc>https://glowbychlo.co/collections.html</loc><priority>0.9</priority></url>
-  <url><loc>https://glowbychlo.co/book.html</loc><priority>0.9</priority></url>
-  <url><loc>https://glowbychlo.co/parties.html</loc><priority>0.8</priority></url>
-  <url><loc>https://glowbychlo.co/aftercare.html</loc><priority>0.7</priority></url>
-  <url><loc>https://glowbychlo.co/faq.html</loc><priority>0.7</priority></url>
-  <url><loc>https://glowbychlo.co/about.html</loc><priority>0.6</priority></url>
-  <url><loc>https://glowbychlo.co/policies.html</loc><priority>0.5</priority></url>
-</urlset>
+# Glow by Chlo — Deployment Guide (A to Z)
+
+Full production build: static site + Square Appointments booking + custom Supabase-backed Studio Console.
+Built by No. XIII Agency.
+
+**Pitch-build status:** the site is fully functional right now with zero backend. The console runs in
+**Demo Mode** (localStorage) until Supabase is connected — so you can demo the entire admin experience
+to Chloe live, on your phone, before she's signed.
+
+---
+
+## 0. What's in the box
+
+```
+glowbychlo/
+├── index.html            Home (hero, collections, pricing, pop-ups, proof, FAQ teaser)
+├── collections.html      Signature collections + full à la carte menu
+├── book.html             Square Appointments embed (auto-fallback until connected)
+├── parties.html          Group rates + Netlify inquiry form + pop-up list
+├── aftercare.html        Full aftercare protocol (SEO content page)
+├── faq.html              10 FAQs + FAQPage schema for rich results
+├── about.html            About Chlo + safety standards
+├── policies.html         Deposits, cancellation, ages, guarantee
+├── thanks.html           Form success page (noindex)
+├── 404.html              Custom 404 (noindex)
+├── admin/index.html      Studio Console (noindex, blocked in robots.txt)
+├── css/site.css          Design system  ·  css/admin.css  Console styles
+├── js/config.js          ★ THE ONLY FILE YOU EDIT TO GO LIVE ★
+├── js/main.js            Site logic  ·  js/admin.js  Console logic
+├── data/*.json           Static fallbacks (used until Supabase is live)
+├── supabase/schema.sql   Tables + locked-down RLS + seed data
+├── netlify.toml          Headers, caching, redirects
+├── robots.txt · sitemap.xml · favicon.svg
+```
+
+**Architecture:** every page is static-first (full SEO, works with no backend). When Supabase is
+configured, `main.js` overlays live values onto elements tagged `data-cms` and pulls events +
+announcement from the database. Console edits are live on the site instantly — no redeploy.
+
+---
+
+## 1. Local preview
+
+The site fetches JSON, so open it through a server, not by double-clicking the file:
+
+```
+cd glowbychlo
+python3 -m http.server 8000
+```
+
+Visit `http://localhost:8000` — console at `http://localhost:8000/admin/` (Demo Mode banner will show).
+
+---
+
+## 2. GitHub + Netlify deploy
+
+1. **GitHub Desktop** → File → New Repository → name `glowbychlo_site` → create.
+2. Drag the entire contents of the `glowbychlo` folder into the repo folder → commit → **Publish repository** (private is fine).
+3. **Netlify** → Add new site → Import from GitHub → pick `glowbychlo_site`.
+4. Build settings: no build command, **publish directory: `.`** → Deploy.
+5. After the first deploy: Site configuration → **Forms** → confirm `party-inquiry` was detected →
+   Form notifications → add Chloe's email. (Netlify Forms only registers after a deploy — a local
+   test submit won't work.)
+
+Future updates: drag-replace files in the repo folder → commit → push. Netlify auto-deploys.
+
+---
+
+## 3. Domain
+
+1. Buy `glowbychlo.co` (Netlify → Domains, or Namecheap/Porkbun and point DNS at Netlify).
+2. Netlify → Domain management → add domain → follow the DNS prompt → HTTPS auto-provisions.
+
+All canonical tags, the sitemap, and schema already reference `https://glowbychlo.co/`.
+If a different domain is used, find-and-replace `glowbychlo.co` across the HTML + `sitemap.xml` + `robots.txt`.
+
+---
+
+## 4. Supabase (turns Demo Mode into Live Mode)
+
+1. [supabase.com](https://supabase.com) → New project (free tier) → name `glowbychlo`, region US West.
+2. **SQL Editor** → New query → paste the entire contents of `supabase/schema.sql` → Run.
+   This creates the tables, seeds the default prices/events/announcement, and applies
+   **locked-down RLS** (public = read-only published content; writes require login).
+3. **Authentication → Users → Add user** → Chloe's email + strong password. That's her console login.
+4. **Project Settings → API** → copy **Project URL** and **anon public key** into `js/config.js`:
+   ```js
+   SUPABASE_URL: "https://xxxx.supabase.co",
+   SUPABASE_ANON_KEY: "eyJhbGciOi...",
+   ```
+5. Commit + push. Console now shows a login screen at `/admin/` and edits go live instantly.
+
+The anon key is safe in the browser — RLS is what gates access. Never paste the `service_role` key anywhere in this project.
+
+---
+
+## 5. Square Appointments
+
+1. Create a free Square account → enable **Appointments** (Free plan works for one artist).
+2. Build the service menu (Items → Services). Suggested structure matching the site:
+   - **Studio — Single Crystal** ($55 · 30 min)
+   - **Studio — Additional Crystal** (add-on, $20)
+   - **Studio — Signature Collection** ($185–$265 · 60–90 min, one service per collection)
+   - **Mobile — Single Crystal** ($80 · includes $25 travel) — repeat for collections
+   - **Gem Removal** ($20 · 15 min)
+3. **Appointments → Settings → Payments & cancellations** → require **$20 no-show protection / deposit**,
+   48-hour cancellation window (matches the policies page).
+4. **Online Booking → Share** → copy the booking page URL → paste into `js/config.js`:
+   ```js
+   SQUARE_BOOKING_URL: "https://square.site/book/XXXX/glow-by-chlo",
+   ```
+5. Push. The book page swaps its fallback card for the live embedded scheduler automatically
+   (plus an "open in new tab" escape hatch for iframe-blocking browsers).
+
+Until this is set, `book.html` shows a branded "booking launching soon — DM to book" card, so the page is never broken.
+
+---
+
+## 6. Swapping in real photos
+
+Image slots are holographic placeholder divs (they look intentional in the pitch). Each is marked:
+
+```html
+<div class="ph ph-45" data-label="Drop client photo · 4:5" ...></div>
+```
+
+Replace with:
+
+```html
+<img src="images/electric-lagoon.jpg" alt="Electric Lagoon tooth gem design — teal butterflies" style="border-radius:20px;aspect-ratio:4/5;object-fit:cover;width:100%">
+```
+
+(Create an `images/` folder; export from IG at 1080px+; keep the alt text descriptive for SEO.)
+
+Slots: 3 collection cards on Home, 3 on Collections, artist portrait on About (4:5), party shot on Parties (16:9).
+
+---
+
+## 7. What Chloe edits vs. what you edit
+
+| Content | Where |
+|---|---|
+| All 10 prices (menu, collections, travel, party rate) | Console → Pricing |
+| Pop-up events (Home + Parties) | Console → Pop-ups |
+| Sitewide announcement bar | Console → Announcement |
+| Booking services, deposits, calendar | Square Dashboard |
+| Party form submissions | Netlify → Forms |
+| Copy, photos, pages, design | You (HTML) |
+
+---
+
+## 8. Pre-pitch checklist
+
+- [ ] Swap placeholder photos for her real IG shots (Section 6)
+- [ ] Replace the 3 sample testimonials on `index.html` (marked as real-sounding sample copy)
+- [ ] Update the 2 sample pop-up events (via console Demo Mode or `data/events.json`)
+- [ ] Confirm pricing with Chloe — defaults are market-researched but hers to set
+- [ ] Confirm her cert/training claims on `about.html` match reality before it ships
+- [ ] Demo flow: Home → Collections → Book (fallback card) → `/admin/` Demo Mode edit → refresh site
+
+---
+
+## 9. Troubleshooting
+
+- **Console says Demo Mode after connecting Supabase** → hard-refresh; `js/config.js` is served
+  no-cache but the browser may have the old app shell.
+- **Login fails** → user must exist in Supabase Authentication (Section 4.3); email confirm can be
+  toggled off under Auth settings for instant access.
+- **Booking iframe blank** → some browsers block third-party iframes; the "Open booking in a new tab"
+  button always works. Confirm the URL loads on its own first.
+- **Form submissions missing** → Netlify Forms need the deployed site (not localhost) and the
+  notification email set in Netlify.
+
+— Built by No. XIII Agency · bricknbarrel-grade stack, sparklier client.
