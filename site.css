@@ -1,11 +1,171 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://glowbychlo.co/</loc><priority>1.0</priority></url>
-  <url><loc>https://glowbychlo.co/collections.html</loc><priority>0.9</priority></url>
-  <url><loc>https://glowbychlo.co/book.html</loc><priority>0.9</priority></url>
-  <url><loc>https://glowbychlo.co/parties.html</loc><priority>0.8</priority></url>
-  <url><loc>https://glowbychlo.co/aftercare.html</loc><priority>0.7</priority></url>
-  <url><loc>https://glowbychlo.co/faq.html</loc><priority>0.7</priority></url>
-  <url><loc>https://glowbychlo.co/about.html</loc><priority>0.6</priority></url>
-  <url><loc>https://glowbychlo.co/policies.html</loc><priority>0.5</priority></url>
-</urlset>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Console — Glow by Chlo</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b0a12">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Sora:wght@400;600&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- ============ LOGIN VIEW ============ -->
+<div id="view-login" class="login-wrap" hidden>
+  <form id="login-form" class="card card-holo login-card">
+    <a class="logo" href="../index.html">GLOW BY CHLO<span class="dot">.</span></a>
+    <span class="eyebrow">Studio console</span>
+    <div>
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" required autocomplete="username">
+    </div>
+    <div>
+      <label for="login-pass">Password</label>
+      <input id="login-pass" type="password" required autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" type="submit">Sign in ✦</button>
+    <p id="login-error" class="form-note error" hidden></p>
+    <p class="form-note">Forgot your password? Reset it from the Supabase dashboard → Authentication.</p>
+  </form>
+</div>
+
+<!-- ============ APP VIEW ============ -->
+<div id="view-app" hidden>
+  <div id="demo-banner" class="demo-banner" hidden>
+    ✦ DEMO MODE — edits save to this browser only. Connect Supabase in js/config.js to go live.
+  </div>
+
+  <header class="admin-head">
+    <div class="wrap">
+      <a class="logo" href="#">GLOW BY CHLO<span class="dot">.</span><small>STUDIO CONSOLE</small></a>
+      <nav class="admin-tabs" id="admin-tabs" aria-label="Console sections">
+        <button data-tab="dashboard" class="is-active">Dashboard</button>
+        <button data-tab="pricing">Pricing</button>
+        <button data-tab="events">Pop-ups</button>
+        <button data-tab="announce">Announcement</button>
+        <button data-tab="settings">Settings</button>
+      </nav>
+      <div class="admin-actions">
+        <a class="btn btn-ghost" href="../index.html" target="_blank" rel="noopener">View site ↗</a>
+        <button class="btn btn-ghost" id="signout-btn" hidden>Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-main">
+
+    <!-- DASHBOARD -->
+    <section id="tab-dashboard" class="tab">
+      <h2 class="tab-title">Hey, <span class="chrome">Chlo</span> ✦</h2>
+      <p class="tab-sub">Everything you edit here updates the live site instantly — no developer, no redeploy.</p>
+      <div class="stat-grid" id="dash-stats"></div>
+      <div class="panel mt-2">
+        <h3>What lives where</h3>
+        <div class="kv"><span class="k">Prices (menu, collections, travel, party rate)</span><span>Pricing tab</span></div>
+        <div class="kv"><span class="k">Pop-up events on Home + Parties pages</span><span>Pop-ups tab</span></div>
+        <div class="kv"><span class="k">Sitewide announcement bar</span><span>Announcement tab</span></div>
+        <div class="kv"><span class="k">Booking calendar, services &amp; deposits</span><span>Square Dashboard</span></div>
+        <div class="kv"><span class="k">Party form submissions</span><span>Netlify → Forms</span></div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="tab-pricing" class="tab" hidden>
+      <h2 class="tab-title">Pricing</h2>
+      <p class="tab-sub">These values appear everywhere the price shows on the site. Type them exactly how you want them displayed — like <em>$55</em> or <em>+$20 ea</em> or <em>from $70</em>.</p>
+      <div class="price-grid" id="pricing-fields"></div>
+      <div class="save-bar">
+        <button class="btn btn-primary" id="save-pricing">Save pricing</button>
+        <span class="form-note">Changes go live the moment you save.</span>
+      </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section id="tab-events" class="tab" hidden>
+      <h2 class="tab-title">Pop-ups &amp; events</h2>
+      <p class="tab-sub">Shown on the Home and Parties pages. Unpublished events stay hidden from the site. Lower sort numbers appear first.</p>
+      <div id="events-list"></div>
+      <div class="panel">
+        <h3>Add a pop-up</h3>
+        <form id="event-add">
+          <div class="row-grid" style="display:grid;gap:.8rem;grid-template-columns:110px 1fr">
+            <div>
+              <label for="new-date">Date label</label>
+              <input id="new-date" placeholder="AUG 30" required>
+            </div>
+            <div>
+              <label for="new-title">Title</label>
+              <input id="new-title" placeholder="Pop-Up: Rocklin Night Market" required>
+            </div>
+          </div>
+          <div>
+            <label for="new-location">Location</label>
+            <input id="new-location" placeholder="Quarry Park, Rocklin">
+          </div>
+          <div>
+            <label for="new-desc">Description</label>
+            <input id="new-desc" placeholder="Walk-ups welcome, singles only.">
+          </div>
+          <button class="btn btn-primary" type="submit">Add pop-up ✦</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ANNOUNCEMENT -->
+    <section id="tab-announce" class="tab" hidden>
+      <h2 class="tab-title">Announcement bar</h2>
+      <p class="tab-sub">The holographic strip at the very top of every page. Perfect for pop-up hype, booking pushes, or holiday hours.</p>
+      <div class="panel">
+        <form id="announce-form">
+          <div>
+            <label for="an-message">Message</label>
+            <input id="an-message" placeholder="✦ Summer pop-up season is live…">
+          </div>
+          <div class="form-grid">
+            <div>
+              <label for="an-url">Link URL <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+              <input id="an-url" placeholder="book.html">
+            </div>
+            <div>
+              <label for="an-label">Link text <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+              <input id="an-label" placeholder="Book now →">
+            </div>
+          </div>
+          <label class="check"><input type="checkbox" id="an-active"> Show the bar on the site</label>
+          <button class="btn btn-primary" type="submit">Save announcement</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="tab-settings" class="tab" hidden>
+      <h2 class="tab-title">Settings</h2>
+      <p class="tab-sub">Connection status and console info. Configuration lives in <code>js/config.js</code>.</p>
+      <div class="panel">
+        <h3>Connections</h3>
+        <div id="settings-status"></div>
+      </div>
+      <div class="panel" id="demo-tools" hidden>
+        <h3>Demo tools</h3>
+        <p class="form-note" style="margin-bottom:1rem">Demo data lives in this browser only. Reset to restore the original sample content.</p>
+        <button class="btn btn-danger btn-sm" id="reset-demo">Reset demo data</button>
+      </div>
+      <div class="panel">
+        <h3>Need a change beyond this console?</h3>
+        <p class="form-note" style="margin:0">Copy, photos, new pages, and design updates are handled by your site team — No. XIII Agency.</p>
+      </div>
+    </section>
+
+  </main>
+  <div id="toast" class="toast" hidden></div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/admin.js"></script>
+</body>
+</html>

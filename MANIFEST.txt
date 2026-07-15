@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Tooth Gem Appointment — Glow by Chlo · Roseville & Sacramento</title>
+<meta name="description" content="Book your Swarovski tooth gem appointment online. Studio slots in Roseville or mobile appointments across Sacramento. $20 deposit, 15–30 minute sessions, free 30-day replacement.">
+<link rel="canonical" href="https://glowbychlo.co/book.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Book Now — Glow by Chlo">
+<meta property="og:description" content="Online booking for Swarovski tooth gems. Studio + mobile across the Sacramento area.">
+<meta property="og:url" content="https://glowbychlo.co/book.html">
+<meta name="theme-color" content="#0b0a12">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Sora:wght@400;600&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body data-root="">
+<a class="skip" href="#main">Skip to content</a>
+<div class="announce" id="announce" role="status"></div>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="logo" href="index.html">GLOW BY CHLO<span class="dot">.</span></a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">MENU</button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="collections.html">Collections</a>
+      <a href="parties.html">Parties</a>
+      <a href="aftercare.html">Aftercare</a>
+      <a href="faq.html">FAQ</a>
+      <a href="about.html">About</a>
+      <a class="btn btn-primary" href="book.html" aria-current="page">Book now</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="page-hero">
+    <div class="wrap">
+      <span class="eyebrow">Two minutes, tops</span>
+      <h1>Book your <span class="chrome twinkle">sparkle</span></h1>
+      <p class="lead">Pick <strong>Studio</strong> (Roseville) or <strong>Mobile</strong> (we come to you) when you choose your service below. A $20 deposit locks your slot and comes off your total.</p>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="embed-shell" id="booking-embed" aria-live="polite">
+        <p style="color:var(--muted)">Loading booking…</p>
+      </div>
+      <p class="center mt-1"><a id="booking-open-new" class="btn btn-ghost" href="#" target="_blank" rel="noopener" hidden>Open booking in a new tab ↗</a></p>
+    </div>
+  </section>
+
+  <section style="background:var(--ink-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Before you <span class="chrome">book</span></h2>
+      </div>
+      <div class="grid grid-3">
+        <div class="card step">
+          <span class="step-num">DEPOSITS</span>
+          <h3>$20 holds your spot</h3>
+          <p>Charged at booking through Square, applied to your service total. Reschedule free up to 48 hours out.</p>
+        </div>
+        <div class="card step">
+          <span class="step-num">AGES</span>
+          <h3>16+ with a guardian</h3>
+          <p>Clients 16–17 need a parent or guardian present at the appointment. 18+ can book solo.</p>
+        </div>
+        <div class="card step">
+          <span class="step-num">PREP</span>
+          <h3>Come as you are</h3>
+          <p>Brush before you arrive if you can. Skip lipstick or gloss — we'll be working close to the smile line.</p>
+        </div>
+        <div class="card step">
+          <span class="step-num">MOBILE</span>
+          <h3>We travel</h3>
+          <p>Mobile appointments cover a 15-mile radius of Roseville (+$25). Farther out? <a href="parties.html" style="color:var(--pink)">Send an inquiry</a> for a quote.</p>
+        </div>
+        <div class="card step">
+          <span class="step-num">DURATION</span>
+          <h3>15–90 minutes</h3>
+          <p>Singles run about 15–30 minutes. Full collections take 45–90 depending on the design.</p>
+        </div>
+        <div class="card step">
+          <span class="step-num">PAYMENT</span>
+          <h3>Card, tap, or cash</h3>
+          <p>Balance is due at your appointment. All major cards, Apple Pay, and cash accepted.</p>
+        </div>
+      </div>
+      <p class="form-note mt-2">Full cancellation and refund terms live on the <a href="policies.html" style="color:var(--pink)">policies page</a>.</p>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="wrap">
+      <h2>Can't find <span class="chrome">a slot?</span></h2>
+      <p class="lead" style="margin-inline:auto">DM <a href="https://instagram.com/glowbychlo.co" target="_blank" rel="noopener" style="color:var(--pink)">@glowbychlo.co</a> — cancellations open up all the time and stories get first dibs.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="logo" href="index.html">GLOW BY CHLO<span class="dot">.</span></a>
+        <p class="mt-1" style="color:var(--muted);font-size:.92rem;max-width:34ch">Certified Swarovski tooth gems. Studio appointments in Roseville, mobile across the Sacramento area.</p>
+      </div>
+      <div>
+        <h4>Sparkle</h4>
+        <a href="collections.html">Collections</a>
+        <a href="book.html">Book an appointment</a>
+        <a href="parties.html">Parties &amp; pop-ups</a>
+        <a href="aftercare.html">Aftercare</a>
+      </div>
+      <div>
+        <h4>Studio</h4>
+        <a href="about.html">About Chlo</a>
+        <a href="faq.html">FAQ</a>
+        <a href="policies.html">Policies</a>
+        <a href="https://instagram.com/glowbychlo.co" target="_blank" rel="noopener">Instagram ↗</a>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <span>© <span id="year"></span> Glow by Chlo · Roseville, CA</span>
+      <span>Site by No. XIII Agency</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
